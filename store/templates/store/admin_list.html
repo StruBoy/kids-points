@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Store admin{% endblock %}
+{% block content %}
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-semibold">Store</h1>
+    <a href="{% url 'store:admin_create' %}"
+       class="rounded-md bg-indigo-600 text-white font-medium px-4 py-2 hover:bg-indigo-700">
+      Add item
+    </a>
+  </div>
+
+  <div class="space-y-2">
+    {% for item in items %}
+      <div class="bg-white rounded-xl shadow-sm p-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3 min-w-0">
+          {% if item.image %}
+            <img src="{{ item.image.url }}" alt="" class="w-12 h-12 rounded object-cover flex-shrink-0">
+          {% else %}
+            <div class="w-12 h-12 rounded bg-slate-100 flex-shrink-0"></div>
+          {% endif %}
+          <div class="min-w-0">
+            <div class="font-medium {% if not item.is_active %}text-slate-400 line-through{% endif %}">
+              {{ item.name }}
+            </div>
+            <div class="text-xs text-slate-500">
+              {{ item.cost }} pts ·
+              {% if item.is_limited %}{{ item.stock_remaining }} left{% else %}repeatable{% endif %}
+              {% if not item.is_active %} · archived{% endif %}
+            </div>
+          </div>
+        </div>
+        <div class="flex items-center gap-3 text-sm flex-shrink-0">
+          <a href="{% url 'store:admin_edit' item.pk %}" class="text-indigo-600 hover:underline">Edit</a>
+          <form method="post" action="{% url 'store:admin_archive' item.pk %}" class="inline">
+            {% csrf_token %}
+            <button type="submit" class="text-slate-500 hover:underline">
+              {% if item.is_active %}Archive{% else %}Restore{% endif %}
+            </button>
+          </form>
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-slate-600">No items yet.</p>
+    {% endfor %}
+  </div>
+
+  <p class="mt-6 text-sm"><a href="{% url 'points:parent_home' %}" class="text-indigo-600 hover:underline">← Back</a></p>
+{% endblock %}

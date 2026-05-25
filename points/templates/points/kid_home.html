@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}{{ user.name }}'s points{% endblock %}
+{% block content %}
+  <div class="bg-white rounded-xl shadow-sm p-6 text-center mb-6">
+    <div class="text-sm uppercase tracking-wide text-slate-500">Your points</div>
+    <div class="text-6xl font-bold text-indigo-600 my-2">{{ balance }}</div>
+    <a href="{% url 'store:browse' %}"
+       class="inline-block mt-2 rounded-md bg-indigo-600 text-white font-medium px-4 py-2 hover:bg-indigo-700">
+      Visit the store
+    </a>
+  </div>
+
+  <h2 class="text-lg font-semibold mb-3">History</h2>
+  <div class="space-y-2">
+    {% for item in history %}
+      <div class="bg-white rounded-lg shadow-sm p-3 flex items-center justify-between">
+        <div>
+          <div class="font-medium">{{ item.label }}</div>
+          <div class="text-xs text-slate-500">
+            {{ item.ts|date:"M j, g:i a" }}{% if item.actor %} · from {{ item.actor }}{% endif %}
+          </div>
+        </div>
+        <div class="font-semibold {% if item.kind == 'award' %}text-emerald-600{% else %}text-rose-600{% endif %}">
+          {% if item.kind == 'award' %}+{% else %}−{% endif %}{{ item.amount }}
+        </div>
+      </div>
+    {% empty %}
+      <p class="text-slate-600">No points yet.</p>
+    {% endfor %}
+  </div>
+{% endblock %}

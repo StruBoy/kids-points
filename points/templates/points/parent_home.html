@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block content %}
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-semibold">Family</h1>
+    <a href="{% url 'points:award' %}"
+       class="rounded-md bg-indigo-600 text-white font-medium px-4 py-2 hover:bg-indigo-700">
+      Give points
+    </a>
+  </div>
+
+  <div class="space-y-3 mb-6">
+    {% for row in rows %}
+      <div class="bg-white rounded-xl shadow-sm p-4 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          {% if row.kid.avatar %}
+            <img src="{{ row.kid.avatar.url }}" alt="" class="w-12 h-12 rounded-full object-cover">
+          {% else %}
+            <div class="w-12 h-12 rounded-full bg-indigo-100 flex items-center justify-center font-semibold text-indigo-700">
+              {{ row.kid.name|slice:":1" }}
+            </div>
+          {% endif %}
+          <div>
+            <div class="font-medium">{{ row.kid.name }}</div>
+            <div class="text-sm text-slate-600">{{ row.balance }} points</div>
+          </div>
+        </div>
+        <a href="{% url 'points:award' %}?kid={{ row.kid.pk }}"
+           class="text-indigo-600 hover:underline text-sm">Give points →</a>
+      </div>
+    {% empty %}
+      <div class="bg-white rounded-xl shadow-sm p-6 text-center">
+        <p class="text-slate-600 mb-3">No kids yet.</p>
+        <a href="{% url 'families:user_create' %}" class="text-indigo-600 hover:underline">Add your first kid →</a>
+      </div>
+    {% endfor %}
+  </div>
+
+  <div class="bg-white rounded-xl shadow-sm p-4">
+    <h2 class="font-semibold mb-2">Pending purchase requests</h2>
+    {% if pending_count %}
+      <a href="{% url 'purchases:queue' %}" class="text-indigo-600 hover:underline">
+        {{ pending_count }} waiting for approval →
+      </a>
+    {% else %}
+      <p class="text-sm text-slate-600">Nothing waiting.</p>
+    {% endif %}
+  </div>
+
+  <div class="mt-6 text-sm text-slate-600 flex gap-4">
+    <a href="{% url 'store:admin_list' %}" class="hover:underline">Manage store</a>
+    <a href="{% url 'families:user_list' %}" class="hover:underline">Manage users</a>
+  </div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}Purchase requests{% endblock %}
+{% block content %}
+  <h1 class="text-2xl font-semibold mb-6">Purchase requests</h1>
+
+  <section class="mb-8">
+    <h2 class="font-semibold mb-3">Waiting for approval</h2>
+    {% if pending %}
+      <div class="space-y-2">
+        {% for pr in pending %}
+          <div class="bg-white rounded-xl shadow-sm p-4 flex items-center justify-between gap-3">
+            <div>
+              <div class="font-medium">{{ pr.item.name }}</div>
+              <div class="text-xs text-slate-500">
+                {{ pr.kid.name }} · {{ pr.cost_at_request }} pts · {{ pr.requested_at|date:"M j, g:i a" }}
+              </div>
+            </div>
+            <div class="flex gap-2">
+              <form method="post" action="{% url 'purchases:approve' pr.pk %}">
+                {% csrf_token %}
+                <button type="submit"
+                        class="rounded-md bg-emerald-600 text-white text-sm font-medium px-3 py-1.5 hover:bg-emerald-700">
+                  Approve
+                </button>
+              </form>
+              <form method="post" action="{% url 'purchases:deny' pr.pk %}">
+                {% csrf_token %}
+                <button type="submit"
+                        class="rounded-md bg-slate-100 text-slate-700 text-sm font-medium px-3 py-1.5 hover:bg-slate-200">
+                  Deny
+                </button>
+              </form>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-sm text-slate-600">Nothing waiting.</p>
+    {% endif %}
+  </section>
+
+  <section>
+    <h2 class="font-semibold mb-3">Approved (deliver these)</h2>
+    {% if approved %}
+      <div class="space-y-2">
+        {% for pr in approved %}
+          <div class="bg-white rounded-xl shadow-sm p-4 flex items-center justify-between gap-3">
+            <div>
+              <div class="font-medium">{{ pr.item.name }}</div>
+              <div class="text-xs text-slate-500">
+                {{ pr.kid.name }} · approved {{ pr.decided_at|date:"M j, g:i a" }}
+              </div>
+            </div>
+            <form method="post" action="{% url 'purchases:fulfill' pr.pk %}">
+              {% csrf_token %}
+              <button type="submit"
+                      class="rounded-md bg-indigo-600 text-white text-sm font-medium px-3 py-1.5 hover:bg-indigo-700">
+                Mark fulfilled
+              </button>
+            </form>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-sm text-slate-600">Nothing to deliver.</p>
+    {% endif %}
+  </section>
+
+  <p class="mt-6 text-sm"><a href="{% url 'points:parent_home' %}" class="text-indigo-600 hover:underline">← Back</a></p>
+{% endblock %}

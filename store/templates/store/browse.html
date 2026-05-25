@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Store{% endblock %}
+{% block content %}
+  <div class="flex items-center justify-between mb-6">
+    <h1 class="text-2xl font-semibold">Store</h1>
+    <div class="text-right">
+      <div class="text-sm text-slate-500">You have</div>
+      <div class="text-xl font-bold text-indigo-600">{{ balance }} pts</div>
+    </div>
+  </div>
+
+  {% if pending %}
+    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-6">
+      <h2 class="font-semibold text-amber-900 mb-2">Waiting for a parent</h2>
+      <ul class="space-y-1 text-sm">
+        {% for p in pending %}
+          <li class="flex justify-between text-amber-900">
+            <span>{{ p.item.name }}</span>
+            <span>{{ p.cost_at_request }} pts</span>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+    {% for item in items %}
+      <div class="bg-white rounded-xl shadow-sm p-3 flex flex-col">
+        {% if item.image %}
+          <img src="{{ item.image.url }}" alt="" class="w-full aspect-square object-cover rounded-md mb-2">
+        {% else %}
+          <div class="w-full aspect-square bg-slate-100 rounded-md mb-2"></div>
+        {% endif %}
+        <div class="font-medium text-sm mb-1">{{ item.name }}</div>
+        <div class="text-xs text-slate-500 mb-2">
+          {{ item.cost }} pts
+          {% if item.is_limited %} · {{ item.stock_remaining }} left{% endif %}
+        </div>
+        <form method="post" action="{% url 'purchases:request_item' item.pk %}" class="mt-auto">
+          {% csrf_token %}
+          {% if item.cost > available %}
+            <button type="submit" disabled
+                    class="w-full rounded-md bg-slate-100 text-slate-400 text-sm font-medium py-2 cursor-not-allowed">
+              Not enough points
+            </button>
+          {% elif item.is_limited and not item.in_stock %}
+            <button type="submit" disabled
+                    class="w-full rounded-md bg-slate-100 text-slate-400 text-sm font-medium py-2 cursor-not-allowed">
+              Sold out
+            </button>
+          {% else %}
+            <button type="submit"
+                    class="w-full rounded-md bg-indigo-600 text-white text-sm font-medium py-2 hover:bg-indigo-700">
+              Request
+            </button>
+          {% endif %}
+        </form>
+      </div>
+    {% empty %}
+      <p class="text-slate-600 col-span-full">No items in the store.</p>
+    {% endfor %}
+  </div>
+
+  <p class="mt-6 text-sm"><a href="{% url 'points:kid_home' %}" class="text-indigo-600 hover:underline">← Back</a></p>
+{% endblock %}

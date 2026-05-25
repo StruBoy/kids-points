@@ -1,0 +1,48 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Kids Points{% endblock %}</title>
+  <script src="https://unpkg.com/htmx.org@2.0.4"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen">
+  <header class="bg-white border-b border-slate-200">
+    <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/" class="text-lg font-semibold text-slate-900">Kids Points</a>
+      {% if user.is_authenticated %}
+        <div class="flex items-center gap-3 text-sm">
+          {% if user.avatar %}
+            <img src="{{ user.avatar.url }}" alt="" class="w-8 h-8 rounded-full object-cover">
+          {% else %}
+            <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-sm font-semibold text-indigo-700">
+              {{ user.name|slice:":1" }}
+            </div>
+          {% endif %}
+          <span class="text-slate-600 hidden sm:inline">{{ user.name }}</span>
+          <a href="{% url 'families:logout' %}" class="text-indigo-600 hover:underline">Switch user</a>
+        </div>
+      {% endif %}
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto px-4 py-6">
+    {% if messages %}
+      <div class="mb-4 space-y-2">
+        {% for message in messages %}
+          <div class="rounded-md px-3 py-2 text-sm
+            {% if message.tags == 'error' %}bg-rose-100 text-rose-800
+            {% elif message.tags == 'success' %}bg-emerald-100 text-emerald-800
+            {% else %}bg-slate-100 text-slate-800{% endif %}">
+            {{ message }}
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

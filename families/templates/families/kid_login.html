@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}{{ kid.name }} — PIN{% endblock %}
+{% block content %}
+  <div class="max-w-sm mx-auto text-center">
+    {% if kid.avatar %}
+      <img src="{{ kid.avatar.url }}" alt="" class="w-24 h-24 rounded-full object-cover mx-auto mb-3">
+    {% else %}
+      <div class="w-24 h-24 rounded-full bg-indigo-100 flex items-center justify-center text-3xl font-semibold text-indigo-700 mx-auto mb-3">
+        {{ kid.name|slice:":1" }}
+      </div>
+    {% endif %}
+
+    <h1 class="text-2xl font-semibold mb-1">Hi {{ kid.name }}!</h1>
+    <p class="text-slate-600 mb-6">Enter your PIN</p>
+
+    <form method="post" class="bg-white p-6 rounded-xl shadow-sm space-y-4">
+      {% csrf_token %}
+
+      {% if error %}
+        <div class="rounded-md bg-rose-100 text-rose-800 px-3 py-2 text-sm">{{ error }}</div>
+      {% endif %}
+
+      <input name="pin" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="4"
+             required autofocus
+             class="text-center text-2xl tracking-[0.5em] w-full rounded-md border px-3 py-3 border-slate-300 focus:border-indigo-500 focus:ring-indigo-500">
+
+      <button type="submit"
+              class="w-full rounded-md bg-indigo-600 text-white font-medium py-2 hover:bg-indigo-700">
+        Go
+      </button>
+    </form>
+
+    <p class="mt-4 text-sm"><a href="{% url 'families:login_picker' %}" class="text-indigo-600 hover:underline">← Not me</a></p>
+  </div>
+{% endblock %}

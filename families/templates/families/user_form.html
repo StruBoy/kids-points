@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}{% if target %}Edit {{ target.name }}{% else %}Add user{% endif %}{% endblock %}
+{% block content %}
+  <h1 class="text-2xl font-semibold mb-6">{% if target %}Edit {{ target.name }}{% else %}Add user{% endif %}</h1>
+
+  <form method="post" enctype="multipart/form-data" class="max-w-md bg-white p-6 rounded-xl shadow-sm space-y-4">
+    {% csrf_token %}
+
+    {% if form.non_field_errors %}
+      <div class="rounded-md bg-rose-100 text-rose-800 px-3 py-2 text-sm">{{ form.non_field_errors }}</div>
+    {% endif %}
+
+    {% for field in form %}
+      <label class="block field-{{ field.name }}">
+        <span class="text-sm font-medium text-slate-700">{{ field.label }}</span>
+        {{ field }}
+        {% if field.help_text %}<div class="text-xs text-slate-500 mt-1">{{ field.help_text }}</div>{% endif %}
+        {% if field.errors %}<div class="text-xs text-rose-600 mt-1">{{ field.errors|join:" " }}</div>{% endif %}
+      </label>
+    {% endfor %}
+
+    <script>
+      (function() {
+        const form = document.currentScript.closest('form');
+        const roleSel = form.querySelector('[name="role"]');
+        const pw = form.querySelector('.field-password');
+        const pin = form.querySelector('.field-pin');
+        const username = form.querySelector('.field-username');
+        function sync() {
+          const isParent = roleSel.value === 'parent';
+          pw.style.display = isParent ? '' : 'none';
+          username.style.display = isParent ? '' : 'none';
+          pin.style.display = isParent ? 'none' : '';
+        }
+        roleSel.addEventListener('change', sync);
+        sync();
+      })();
+    </script>
+
+    <div class="flex gap-2">
+      <button type="submit"
+              class="rounded-md bg-indigo-600 text-white font-medium px-4 py-2 hover:bg-indigo-700">
+        Save
+      </button>
+      <a href="{% url 'families:user_list' %}"
+         class="rounded-md bg-slate-100 text-slate-700 font-medium px-4 py-2 hover:bg-slate-200">
+        Cancel
+      </a>
+    </div>
+  </form>
+
+  <style>
+    form input[type=text], form input[type=password], form input[type=file], form select {
+      margin-top: 0.25rem;
+      width: 100%;
+      border: 1px solid #cbd5e1;
+      border-radius: 0.375rem;
+      padding: 0.5rem 0.75rem;
+    }
+  </style>
+{% endblock %}
