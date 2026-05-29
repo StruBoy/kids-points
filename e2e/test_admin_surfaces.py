@@ -49,6 +49,24 @@ class StoreAdminTests(PlaywrightTestCase):
         self.shot("admin_list_after_create")
         self.assertTrue(self.page.get_by_text("Broken").is_visible())
 
+        # Edit the item we just created and change the cost.
+        broken_row = self.page.locator("div.bg-white").filter(has_text="Broken")
+        broken_row.locator('a:has-text("Edit")').click()
+        self.page.wait_for_url("**/store/admin/*/edit/")
+        self.shot("admin_form_edit_prefilled")
+        self.assertEqual(
+            self.page.locator('input[name="name"]').input_value(), "Broken"
+        )
+
+        self.page.fill('input[name="cost"]', "7")
+        self.page.fill('input[name="stock_remaining"]', "2")
+        self.page.click('button:has-text("Save")')
+        self.page.wait_for_url("**/store/admin/")
+        self.shot("admin_list_after_edit")
+        # Cost should now show 7
+        broken_row = self.page.locator("div.bg-white").filter(has_text="Broken")
+        self.assertTrue(broken_row.get_by_text("7 pts", exact=False).is_visible())
+
 
 class UserAdminTests(PlaywrightTestCase):
     def setUp(self):

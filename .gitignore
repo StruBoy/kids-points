@@ -18,3 +18,8 @@ __pycache__/
 
 # Playwright screenshots
 /screenshots/
+
+# Coverage + test reports
+.coverage
+.coverage.*
+/reports/

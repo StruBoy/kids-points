@@ -1,0 +1,29 @@
+[run]
+source =
+    families
+    points
+    store
+    purchases
+    web
+    kidspoints
+omit =
+    */migrations/*
+    */tests/*
+    */__init__.py
+    manage.py
+    e2e/*
+    kidspoints/asgi.py
+    kidspoints/wsgi.py
+    families/management/commands/seed_family.py
+
+[report]
+exclude_lines =
+    pragma: no cover
+    raise NotImplementedError
+    if __name__ == .__main__.:
+show_missing = True
+skip_covered = False
+
+[json]
+output = reports/coverage.json
+pretty_print = True

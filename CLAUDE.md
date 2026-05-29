@@ -90,11 +90,16 @@ See `README.md` for the human pitch and `PLAN.md` for design decisions.
 
 ```sh
 .venv/bin/python manage.py runserver
-.venv/bin/python manage.py seed_family --reset   # wipe + reseed demo data
-.venv/bin/python manage.py test                  # all 90 tests, ~6s
-.venv/bin/python manage.py test e2e              # browser tests only
-.venv/bin/python manage.py makemigrations <app>  # after model changes
+.venv/bin/python manage.py seed_family --reset       # wipe + reseed demo data
+.venv/bin/python manage.py test                      # all 90 tests, ~6s
+.venv/bin/python manage.py test e2e                  # browser tests only
+.venv/bin/python manage.py makemigrations <app>      # after model changes
+.venv/bin/coverage run manage.py test && .venv/bin/coverage json  # refresh coverage data
 ```
+
+The `/review-tests` skill (`.claude/skills/review-tests/`) audits
+coverage + e2e screenshots and writes a report — read-only, never runs
+tests. Refresh artifacts first if they're stale.
 
 ## What NOT to do without asking
 

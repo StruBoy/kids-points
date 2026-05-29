@@ -216,10 +216,26 @@ shared browser).
   the user/auth admin** — these are the highest-blast-radius parts.
 - **Not** for typo fixes, copy changes, or pure styling.
 
+## Coverage
+
+`coverage.py` is wired up. Configured in `.coveragerc` to source from the
+five apps + `kidspoints/`, omitting migrations, tests, e2e, and the
+seed-data management command.
+
+```sh
+.venv/bin/coverage run manage.py test         # runs suite, records coverage
+.venv/bin/coverage report                     # plain-text summary
+.venv/bin/coverage json                       # writes reports/coverage.json
+.venv/bin/coverage html && open htmlcov/index.html  # browseable
+```
+
+The `/review-tests` skill (`.claude/skills/review-tests/`) reads
+`reports/coverage.json` and the `screenshots/` tree to produce a dated
+report under `reports/`. It does not run tests itself — refresh the
+artifacts first if they're stale.
+
 ## Future (not v1)
 - GitHub Actions running `manage.py test` (and optionally e2e) on push
   if/when this lives in a shared repo.
-- Coverage report via `coverage run` — useful as a discovery tool, never as
-  a gate.
 - Visual regression: compare screenshots across runs (e.g. `pixelmatch`)
   once the UI is stable enough that diffs are signal, not noise.
