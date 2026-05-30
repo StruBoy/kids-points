@@ -1,0 +1,40 @@
+services:
+  app:
+    image: ${REGISTRY}/${IMAGE_NAME:-kidspoints}:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    environment:
+      DJANGO_SECRET_KEY: ${DJANGO_SECRET_KEY:?DJANGO_SECRET_KEY is required}
+      DJANGO_DEBUG: "0"
+      DJANGO_ALLOWED_HOSTS: ${DJANGO_ALLOWED_HOSTS:?DJANGO_ALLOWED_HOSTS is required}
+      DJANGO_DB_PATH: /data/db.sqlite3
+      GUNICORN_WORKERS: ${GUNICORN_WORKERS:-3}
+    volumes:
+      - kidspoints_db:/data
+      - kidspoints_media:/app/media
+      - kidspoints_static:/app/staticfiles
+    expose:
+      - "8000"
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?SITE_ADDRESS is required (e.g. :80 or points.example.com)}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - kidspoints_media:/srv/media:ro
+      - kidspoints_static:/srv/static:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - app
+
+volumes:
+  kidspoints_db:
+  kidspoints_media:
+  kidspoints_static:
+  caddy_data:
+  caddy_config:
